@@ -1,0 +1,43 @@
+HEADER	=	ft_printf.h
+
+NAME	=	libftprintf.a
+
+SRCS	=	ft_printf.c ft_format.c ft_aux_itoa.c 
+
+OBJS	= 	$(SRCS:.c=.o)
+DEP	= 	$(addsuffix .d, $(basename $(OBJS)))
+
+CC	= 	gcc
+
+RM	= 	rm -f
+
+LIBC	= 	ar -rcs
+
+FLAGS	= 	-Wall -Wextra -Werror
+
+-include $(DEP)
+
+all: make_libs $(NAME)
+
+$(OBJ)%.o:%.c Makefile
+	$(CC) $(FLAGS) -MMD -I ./ -c $< -o $@
+
+make_libs:
+	MAKE -C libft/
+	cp libft/libft.a ${NAME}
+
+$(NAME): ${OBJS} ${HEADER}
+	$(LIBC) $(NAME) $(OBJS)
+	@echo "Finalizado creación de objetos."
+
+fclean: clean
+	MAKE -C libft fclean
+	$(RM) $(NAME)
+
+clean:
+	MAKE -C libft clean
+	$(RM) $(OBJS) $(DEP)
+
+re: fclean all
+
+.PHONY: all clean fclean re .c.o
